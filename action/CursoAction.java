@@ -2,13 +2,12 @@ package mobi.stos.projetoestacio.action;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import mobi.stos.projetoestacio.bean.Aluno;
-import mobi.stos.projetoestacio.bo.IAlunoBo;
-import mobi.stos.projetoestacio.enumm.SexoEnum;
+import mobi.stos.projetoestacio.bean.Curso;
+import mobi.stos.projetoestacio.bo.ICursoBo;
 import mobi.stos.projetoestacio.exception.LoginExpiradoException;
 import mobi.stos.projetoestacio.util.Consulta;
 import mobi.stos.projetoestacio.util.Keys;
@@ -19,15 +18,15 @@ import org.apache.struts2.json.annotations.JSON;
 import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class AlunoAction extends GenericAction {
+public class CursoAction extends GenericAction {
 
-    private Aluno aluno;
-    private List<Aluno> alunos;
+    private Curso curso;
+    private List<Curso> cursos;
 
     @Autowired
-    private IAlunoBo iAlunoBo;
+    private ICursoBo iCursoBo;
 
-    @Action(value = "persistAluno",
+    @Action(value = "persistCurso",
             results = {
                 @Result(name = SUCCESS, location = "/app/notify/")
                 ,
@@ -36,10 +35,10 @@ public class AlunoAction extends GenericAction {
     public String salvar() {
         try {
 
-            aluno = this.iAlunoBo.persist(aluno);
+            curso = this.iCursoBo.persist(curso);
 
             addActionMessage("Registro salvo com sucesso.");
-            setRedirectURL("listAluno");
+            setRedirectURL("listCurso");
             return SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,9 +47,9 @@ public class AlunoAction extends GenericAction {
         }
     }
 
-    @Action(value = "listAluno",
+    @Action(value = "listCurso",
             results = {
-                @Result(name = SUCCESS, location = "/app/aluno/index.jsp")
+                @Result(name = SUCCESS, location = "/app/curso/index.jsp")
                 ,
                 @Result(name = ERROR, location = "/app/notify/")
             })
@@ -63,7 +62,7 @@ public class AlunoAction extends GenericAction {
             }
             Consulta consulta = getConsulta();
             consulta.addOrder(Order.asc("nome"));
-            this.alunos = this.iAlunoBo.list(getConsulta());
+            this.cursos = this.iCursoBo.list(getConsulta());
             return SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,19 +71,19 @@ public class AlunoAction extends GenericAction {
         }
     }
 
-    @Action(value = "prepareAluno",
+    @Action(value = "prepareCurso",
             interceptorRefs = {
                 @InterceptorRef(value = "basicStack")},
             results = {
                 @Result(name = ERROR, location = "/app/notify/")
                 ,
-                @Result(name = SUCCESS, location = "/app/aluno/formulario.jsp")
+                @Result(name = SUCCESS, location = "/app/curso/formulario.jsp")
             })
     public String preparar() {
         try {
             GenericAction.isLogged(request);
-            if (aluno != null && aluno.getId() != null) {
-                aluno = this.iAlunoBo.load(this.aluno.getId());
+            if (curso != null && curso.getId() != null) {
+                curso = this.iCursoBo.load(this.curso.getId());
             }
             return SUCCESS;
         } catch (Exception e) {
@@ -93,7 +92,7 @@ public class AlunoAction extends GenericAction {
         }
     }
 
-    @Action(value = "deleteAluno",
+    @Action(value = "deleteCurso",
             interceptorRefs = {
                 @InterceptorRef(value = "basicStack")},
             results = {
@@ -102,31 +101,32 @@ public class AlunoAction extends GenericAction {
     public String delete() {
         try {
             GenericAction.isLogged(request);
-            iAlunoBo.delete(aluno.getId());
+            iCursoBo.delete(curso.getId());
             addActionMessage("Registro excluído com sucesso.");
-            setRedirectURL("listAluno");
+            setRedirectURL("listCurso");
         } catch (LoginExpiradoException e) {
             addActionError("Erro ao processar a informação. Erro: " + e.getMessage());
         }
         return SUCCESS;
     }
 
-    public Aluno getAluno() {
-        return aluno;
+    public Curso getCurso() {
+        return curso;
     }
 
-    public void setAluno(Aluno aluno) {
-        this.aluno = aluno;
+    public void setCurso(Curso curso) {
+        this.curso = curso;
     }
 
-    public List<Aluno> getAlunos() {
-        return alunos;
+    public List<Curso> getCursos() {
+        return cursos;
     }
 
-    public void setAlunos(List<Aluno> alunos) {
-        this.alunos = alunos;
+    public void setCursos(List<Curso> cursos) {
+        this.cursos = cursos;
     }
-   
+
+ 
 
     @JSON(serialize = false)
     public List<Keys> getCamposConsultaEnum() {
@@ -137,7 +137,7 @@ public class AlunoAction extends GenericAction {
 
     @Override
     public void prepare() throws Exception {
-        setMenu(Aluno.class.getSimpleName());
+        setMenu(Curso.class.getSimpleName());
     }
 
     @Override
